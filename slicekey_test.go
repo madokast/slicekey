@@ -1,45 +1,63 @@
 package slicekey
 
 import (
-	"fmt"
-	"slices"
+	"math/rand"
 	"testing"
 )
 
-func TestMake(t *testing.T) {
-	s := MakeSlice[int]()
-	assert(len(s.ToSlice()) == 0, "%v", s.ToSlice())
+func TestOfInt(t *testing.T) {
+	intArr := Of(1, 2, 3)
+	t.Logf("%T %v", intArr, intArr)
 }
 
-func TestMakeSliceWithCap(t *testing.T) {
-	s := MakeSliceWithCap[int](5)
-	assert(len(s.ToSlice()) == 0, "%v", s.ToSlice())
+func TestOfString(t *testing.T) {
+	intArr := Of("", "hello", "apple")
+	t.Logf("%T %v", intArr, intArr)
 }
 
-func TestCap0(t *testing.T) {
-	s := MakeSlice[int]()
-	assert(s.Cap() == 0, "%v", s.Cap())
-}
-
-func TestCap1(t *testing.T) {
-	s := MakeSliceWithCap[int](10)
-	assert(s.Cap() == 10, "%v", s.Cap())
-}
-
-func TestCap2(t *testing.T) {
-	s := MakeSliceWithCap[string](10)
-	assert(s.Cap() == 10, "%v", s.Cap())
-}
-
-func TestAdd(t *testing.T) {
-	s := MakeSlice[int]()
-	s.Add(12)
-	assert(slices.Equal(s.ToSlice(), []int{12}), "%v", s.ToSlice())
-}
-
-
-func assert(b bool, format string, args...any) {
-	if !b {
-		panic(fmt.Sprintf(format, args...))
+func TestLen(t *testing.T) {
+	for i := 0; i < 5; i++ {
+		s := make([]int, i)
+		sk := Of(s...)
+		t.Log(sk.Len())
 	}
+}
+
+func TestLen2(t *testing.T) {
+	for i := 0; i < 100; i++ {
+		le := int(rand.Int31() % 1000)
+		s := make([]int, le)
+		sk := Of(s...)
+		if sk.Len() != le {
+			t.Fatalf("len neq %d <> %d", le, sk.Len())
+			t.Fail()
+		}
+	}
+}
+
+func TestSlice(t *testing.T) {
+	intArr := Of(1, 2, 3)
+	intS := intArr.Slice()
+	t.Logf("%T %v", intS, intS)
+}
+
+func TestString(t *testing.T) {
+	intArr := Of(1, 2, 3)
+	t.Logf("%T %v", intArr, intArr)
+}
+
+func TestMapKey(t *testing.T) {
+	m := map[Slice[int]]string{}
+	m[Of([]int{}...)] = "empty"
+	m[Of(1)] = "1-"
+	m[Of(1, 2)] = "1-2"
+	m[Of(1, 3)] = "1-3"
+	m[Of(3, 1)] = "3-1"
+
+	m[Of(1)] = "1-modify"
+
+	t.Logf("%T %v", m, m)
+
+	t.Logf("m[1, 3] = %s", m[Of(1, 3)])
+	t.Logf("m[3, 1] = %s", m[Of(3, 1)])
 }
