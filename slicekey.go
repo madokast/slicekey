@@ -36,6 +36,12 @@ func (s *Slice[E]) Len() int {
 	return arrObj.Len()
 }
 
+func (s *Slice[E]) Get(index int) E {
+	arrObj := reflect.ValueOf(s.data)
+	obj := arrObj.Index(index)
+	return obj.Interface().(E)
+}
+
 // get a slice copied from the slicekey
 func (s *Slice[E]) Slice() []E {
 	es := make([]E, s.Len())

@@ -86,3 +86,27 @@ func TestMapKey2(t *testing.T) {
 
 	fmt.Printf("%v\n", m) // map[{[100]}:100 {[101]}:101 {[100 20]}:120 {[100 21]}:121 {[100 22]}:122 {[101 20]}:121 {[101 21]}:122 {[101 22]}:123]
 }
+
+func TestGet(t *testing.T) {
+	s := Of(1, 2, 3)
+	for i := 0; i < s.Len(); i++ {
+		fmt.Printf("%d\t", s.Get(i))
+		if s.Get(i) != s.Slice()[i] {
+			t.Fatalf("s.Get(%d)[%d] != s.Slice()[%d][%d]", i, s.Get(i), i, s.Slice()[i])
+			t.Fail()
+		}
+	}
+	fmt.Println()
+}
+
+func TestGet2(t *testing.T) {
+	s := Of("abc", "hello", " world!")
+	for i := 0; i < s.Len(); i++ {
+		fmt.Printf("%s\t", s.Get(i))
+		if s.Get(i) != s.Slice()[i] {
+			t.Fatalf("s.Get(%d)[%s] != s.Slice()[%d][%s]", i, s.Get(i), i, s.Slice()[i])
+			t.Fail()
+		}
+	}
+	fmt.Println()
+}
