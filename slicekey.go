@@ -9,6 +9,7 @@ type Slice[E any] struct {
 	data any // array obj
 }
 
+// create a slicekey from elements
 func Of[E any](elements ...E) Slice[E] {
 	sliceType := reflect.TypeOf(elements)
 	eleType := sliceType.Elem()
@@ -24,11 +25,18 @@ func Of[E any](elements ...E) Slice[E] {
 	return Slice[E]{data: arrObj.Interface()}
 }
 
+// create a slicekey from slice
+func Create[E any](es []E) Slice[E] {
+	return Of(es...)
+}
+
+// the length of the slicekey
 func (s *Slice[E]) Len() int {
 	arrObj := reflect.ValueOf(s.data)
 	return arrObj.Len()
 }
 
+// get a slice copied from the slicekey
 func (s *Slice[E]) Slice() []E {
 	es := make([]E, s.Len())
 	esObj := reflect.ValueOf(es)
