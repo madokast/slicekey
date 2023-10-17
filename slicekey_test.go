@@ -1,6 +1,9 @@
 package slicekey
 
 import (
+	"bytes"
+	"encoding/gob"
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"testing"
@@ -109,4 +112,80 @@ func TestGet2(t *testing.T) {
 		}
 	}
 	fmt.Println()
+}
+
+func TestEmpty(t *testing.T) {
+	s := Of[int]()
+	t.Log(s.String())
+
+	s = Create[int](nil)
+	t.Log(s.String())
+}
+
+func TestJson(t *testing.T) {
+	s := Of("abc", "hello", " world!")
+	t.Log(s.String())
+
+	var buf = bytes.Buffer{}
+	_ = json.NewEncoder(&buf).Encode(s)
+	t.Log(buf.String())
+
+	var s2 Slice[string]
+	_ = json.NewDecoder(&buf).Decode(&s2)
+	t.Log(s2.String())
+
+	if s != s2 {
+		panic(s.String() + " " + s2.String())
+	}
+}
+
+func TestJsonEmpty(t *testing.T) {
+	s := Create[int](nil)
+	t.Log(s.String())
+
+	var buf = bytes.Buffer{}
+	_ = json.NewEncoder(&buf).Encode(s)
+	t.Log(buf.String())
+
+	var s2 Slice[int]
+	_ = json.NewDecoder(&buf).Decode(&s2)
+	t.Log(s2.String())
+
+	if s2.Len() != 0 {
+		panic(s2.Len())
+	}
+}
+
+func TestGob(t *testing.T) {
+	s := Of("abc", "hello", " world!")
+	t.Log(s.String())
+
+	var buf = bytes.Buffer{}
+	_ = gob.NewEncoder(&buf).Encode(s)
+	t.Log(buf.String())
+
+	var s2 Slice[string]
+	_ = gob.NewDecoder(&buf).Decode(&s2)
+	t.Log(s2.String())
+
+	if s != s2 {
+		panic(s.String() + " " + s2.String())
+	}
+}
+
+func TestGobEmpty(t *testing.T) {
+	s := Create[int64](nil)
+	t.Log(s.String())
+
+	var buf = bytes.Buffer{}
+	_ = gob.NewEncoder(&buf).Encode(s)
+	t.Log(buf.String())
+
+	var s2 Slice[int64]
+	_ = gob.NewDecoder(&buf).Decode(&s2)
+	t.Log(s2.String())
+
+	if s != s2 {
+		panic(s.String() + " " + s2.String())
+	}
 }

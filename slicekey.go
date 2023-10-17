@@ -1,6 +1,9 @@
 package slicekey
 
 import (
+	"bytes"
+	"encoding/gob"
+	"encoding/json"
 	"fmt"
 	"reflect"
 )
@@ -55,4 +58,38 @@ func (s *Slice[E]) Slice() []E {
 
 func (s *Slice[E]) String() string {
 	return fmt.Sprintf("%v", s.Slice())
+}
+
+func (s Slice[E]) MarshalJSON() ([]byte, error) {
+	buf := bytes.Buffer{}
+	err := json.NewEncoder(&buf).Encode(s.Slice())
+	return buf.Bytes(), err
+}
+
+func (s *Slice[E]) UnmarshalJSON(data []byte) error {
+	var es []E
+	err := json.NewDecoder(bytes.NewBuffer(data)).Decode(&es)
+	if err != nil {
+		return err
+	}
+	temp := Create(es)
+	s.data = temp.data
+	return nil
+}
+
+func (s Slice[E]) MarshalBinary() (data []byte, err error) {
+	buf := bytes.Buffer{}
+	err = gob.NewEncoder(&buf).Encode(s.Slice())
+	return buf.Bytes(), err
+}
+
+func (s *Slice[E]) UnmarshalBinary(data []byte) error {
+	var es []E
+	err := gob.NewDecoder(bytes.NewBuffer(data)).Decode(&es)
+	if err != nil {
+		return err
+	}
+	temp := Create(es)
+	s.data = temp.data
+	return nil
 }
