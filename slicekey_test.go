@@ -189,3 +189,59 @@ func TestGobEmpty(t *testing.T) {
 		panic(s.String() + " " + s2.String())
 	}
 }
+
+func TestForeach(t *testing.T) {
+	s := Of(10, 11, 12, 13)
+	var cnt = 0
+	s.Foreach(func(index, element int) {
+		cnt++
+		t.Log(index, element)
+		if element != index+10 {
+			t.Error(index, element)
+		}
+	})
+	if cnt != 4 {
+		t.Error(cnt, 4)
+	}
+	if cnt != s.Len() {
+		t.Error(cnt, s.Len())
+	}
+}
+
+func TestSet(t *testing.T) {
+	s := Of(10, 11, 12, 13)
+	for i := 0; i < 4; i++ {
+		s = s.Set(i, 100+i)
+	}
+	var cnt = 0
+	s.Foreach(func(index, element int) {
+		cnt++
+		t.Log(index, element)
+		if element != index+100 {
+			t.Error(index, element)
+		}
+	})
+	if cnt != 4 {
+		t.Error(cnt, 4)
+	}
+	if cnt != s.Len() {
+		t.Error(cnt, s.Len())
+	}
+}
+
+func BenchmarkSlice(b *testing.B) { // 0.0000002 ns/op
+	const LEN = 20
+	var ints = make([]int, LEN)
+	for i := 0; i < LEN; i++ {
+		ints[i] = i
+	}
+}
+
+func BenchmarkKeySlice(b *testing.B) { // 0.0000340 ns/op
+	const LEN = 20
+	var ints = Create(make([]int, LEN))
+	for i := 0; i < LEN; i++ {
+		ints = ints.Set(i, i)
+	}
+}
+
